@@ -8,33 +8,56 @@ import "./styles/app.css";
 
 function App() {
   // Use initialEmails for state
-  console.log(initialEmails);
 
   const [emailsState, setEmailsState] = useState(initialEmails);
+  const [tempState, setTempState] = useState(emailsState);
+  const [showUnread, setShowUnread] = useState(false);
+
+  const unreadEmails = emailsState.filter(function (email) {
+    return email.read === false;
+  });
+  const [unreadEmailsState, setUnreadEmailsState] = useState(unreadEmails);
 
   const toggleStar = (emailId) => {
     console.log("toggleStar");
-    const updatedEmail = emailsState.map(function (emailInState) {
+    const updatedStarredEmail = emailsState.map(function (emailInState) {
       if (emailInState.id === emailId) {
         return { ...emailInState, starred: !emailInState.starred };
       }
       return emailInState;
     });
-    setEmailsState(updatedEmail);
+    setEmailsState(updatedStarredEmail);
   };
 
-  const toggleRead = (emailId) => {
-    console.log("toggleRead");
-    const updatedEmail = emailsState.map(function (emailInState) {
+  const toggleReadCheckmark = (emailId, emailReadStatus) => {
+    console.log("toggleReadCheckmark");
+
+    const updatedReadEmail = emailsState.map(function (emailInState) {
       if (emailInState.id === emailId) {
-        return { ...emailInState, read: !emailInState.read };
+        return { ...emailInState, read: !emailReadStatus };
       }
       return emailInState;
     });
-    setEmailsState(updatedEmail);
+
+    setEmailsState(updatedReadEmail);
+
+    const updatedUnreadEmails = emailsState.filter(function (email) {
+      return email.read === false;
+    });
+
+    setUnreadEmailsState(updatedUnreadEmails);
   };
 
-  const hideRead = (clickedEmail) => console.log("hideRead");
+  const toggleUnreadEmails = () => {
+    if (showUnread === false) {
+      setTempState(emailsState);
+      setEmailsState(unreadEmailsState);
+    }
+    if (showUnread === true) {
+      setEmailsState(tempState);
+    }
+  };
+
   const menuItemSelection = (event) => console.log("menuItemSelection");
 
   return (
@@ -49,7 +72,7 @@ function App() {
             }}
           >
             <span className="label">Inbox</span>
-            <span className="count">{emailsState.length}</span>
+            <span className="count">{unreadEmailsState.length}</span>
           </li>
           <li
             className="item"
@@ -66,9 +89,10 @@ function App() {
             <input
               id="hide-read"
               type="checkbox"
-              checked={false}
+              checked={showUnread}
               onChange={() => {
-                hideRead();
+                setShowUnread(!showUnread);
+                toggleUnreadEmails();
               }}
             />
           </li>
@@ -83,7 +107,7 @@ function App() {
                 type="checkbox"
                 checked={thisEmail.read}
                 onChange={() => {
-                  toggleRead();
+                  toggleReadCheckmark(thisEmail.id, thisEmail.read);
                 }}
               />
             </div>
