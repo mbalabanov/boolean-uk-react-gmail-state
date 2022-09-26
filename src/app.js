@@ -18,6 +18,19 @@ function App() {
   });
   const [unreadEmailsState, setUnreadEmailsState] = useState(unreadEmails);
 
+  const countStarred = () => {
+    console.log("countStarred");
+    let currentStarred = 0;
+    emailsState.map((email) => {
+      if (email.starred) {
+        currentStarred++;
+      }
+    });
+    return currentStarred;
+  };
+
+  const [starredState, setStarred] = useState(countStarred());
+
   const toggleStar = (emailId) => {
     console.log("toggleStar");
     const updatedStarredEmail = emailsState.map(function (emailInState) {
@@ -26,6 +39,7 @@ function App() {
       }
       return emailInState;
     });
+    setStarred(countStarred());
     setEmailsState(updatedStarredEmail);
   };
 
@@ -81,7 +95,7 @@ function App() {
             }}
           >
             <span className="label">Starred</span>
-            <span className="count">?</span>
+            <span className="count">{starredState}</span>
           </li>
 
           <li className="item toggle">
